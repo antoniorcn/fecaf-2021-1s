@@ -1,0 +1,27 @@
+Instalar o React Native
+
+
+1o Instalar o Node JS
+
+	Baixar e instalar o node do site https://nodejs.org/en/
+	node --version
+
+2o Instalar o Expo-Cli
+	npm install expo-cli --global
+
+3o Criar a aplicação
+	expo init app2
+
+	Estrutura do diretorio da aplicação
+	app2
+	 |
+	 |-node_modules
+	 |-App.js
+	 |-app.json
+	 |-package.json
+	 |-assets
+	 |-babel.config.js
+
+4o Rodar a aplicação
+	npm start
+	
