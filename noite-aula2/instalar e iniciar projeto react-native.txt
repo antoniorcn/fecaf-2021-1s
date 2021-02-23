@@ -1,0 +1,29 @@
+Instalado o React Native
+
+	1) Instalar o Node JS do site https://nodejs.org/en/
+
+	2) Instalar o Expo CLI no Desktop
+		npm install expo-cli --global
+
+	3) Instalar o Expo Go no celular
+	
+
+Etapas para criar um projeto
+	1) Escolher o diretorio onde o projeto será colocado
+
+	2) Criar o projeto usando expo init <nome do projeto>
+		expo init app2
+
+	* Será criado o diretorio do projeto
+		|
+		| - node_modules
+		| - package.json
+		| - App.js
+		| - babel.config.js
+
+	3) Entrar no diretorio do projeto
+		cd app2
+
+	4) Executar o projeto
+		npm start
+	
