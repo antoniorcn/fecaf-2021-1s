@@ -3,6 +3,10 @@ import React from 'react';
 import { Button, ImageBackground, StyleSheet, Text, TextInput, View } from 'react-native';
 import ImgRoupas from './assets/roupas.jpg';
 import axios from 'axios';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
 
 const estilos = StyleSheet.create(
   {
@@ -20,6 +24,9 @@ const estilos = StyleSheet.create(
       flex: 1,
       justifyContent: 'center',
       alignItems: 'stretch'
+    },
+    navigator : { 
+      flex: 3,
     },
     formulario: {
       flex: 3,
@@ -49,6 +56,48 @@ const estilos = StyleSheet.create(
   }
 );
 
+const RoupaItem = (props) => { 
+  return (
+    <View>
+      <Text>Tipo: {props.roupa.tipo}</Text>
+      <Text>Estilo: {props.roupa.estilo}</Text>
+      <Text>Tamanho: {props.roupa.tamanho}</Text>
+    </View>
+  )
+}
+
+class ListarRoupas extends React.Component { 
+
+  state = {
+    listaRoupas: []
+  }
+
+  componentDidMount() { 
+    axios.get('https://fecaf-app1.herokuapp.com/roupas').then(
+      (resposta) => {
+        const novoState = {...this.state};
+        novoState.listaRoupas = [...resposta.data];
+        this.setState(novoState);
+      }
+    );
+  }
+
+  render() {
+    const roupasDisplay = [];
+    this.state.listaRoupas.forEach((element, indice) => {
+      roupasDisplay.push(
+          <RoupaItem roupa={element} key={indice}></RoupaItem>
+      );
+    });    
+
+    return(
+      <View>
+        {roupasDisplay}
+      </View>
+    );
+  }
+}
+
 class LojaRoupas extends React.Component { 
 
   state = {
@@ -59,16 +108,27 @@ class LojaRoupas extends React.Component {
     }
   } 
 
-  ler() { 
-    axios.get('https://jsonplaceholder.typicode.com/albums/1').then(
-      (resposta) => {
-        // console.log(resposta.data);
-        const novoState = {...this.state};
-        novoState.roupa.tipo = "" + resposta.data.id;
-        novoState.roupa.estilo = resposta.data.title;
-        novoState.roupa.tamanho = "" + resposta.data.userId;
-        this.setState(novoState);
-      }
+  roupa() {
+    // const roupa = this.state.roupa;
+    return(
+      <View style={estilos.formulario}>
+        <TextInput style={estilos.input} 
+                    placeholder="Tipo da Roupa"
+                    //value={roupa.tipo}
+                    />
+        <TextInput style={estilos.input} 
+                    placeholder="Estilo da Roupa"
+                    //value={roupa.estilo}
+                    />
+        <TextInput style={estilos.input}
+                    placeholder="Tamanho"
+                    //value={roupa.tamanho}
+                    />
+        <Button style={estilos.botao} 
+                title="Gravar"
+                //onPress={()=>{this.ler();}}
+                ></Button>
+      </View>
     );
   }
 
@@ -81,19 +141,13 @@ class LojaRoupas extends React.Component {
             <Text style={estilos.titulo1}>Loja de Roupas</Text>
           </ImageBackground>
         </View>
-        <View style={estilos.formulario}>
-          <TextInput style={estilos.input} 
-                      placeholder="Tipo da Roupa"
-                      value={roupa.tipo}/>
-          <TextInput style={estilos.input} 
-                      placeholder="Estilo da Roupa"
-                      value={roupa.estilo}/>
-          <TextInput style={estilos.input}
-                      placeholder="Tamanho"
-                      value={roupa.tamanho}/>
-          <Button style={estilos.botao} 
-                  title="Ler"
-                  onPress={()=>{this.ler();}}></Button>
+        <View style={estilos.navigator}>
+          <NavigationContainer>
+            <Tab.Navigator>
+              <Tab.Screen name="Roupa" component={this.roupa}/>
+              <Tab.Screen name="Lista" component={ListarRoupas}/>
+            </Tab.Navigator>
+          </NavigationContainer>
         </View>
       </View>
     );
