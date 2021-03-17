@@ -58,7 +58,7 @@ const Lancamento = (props) => {
       <TextInput value={""+props.lancamentoAtual.valor}
           onChangeText={(texto)=>{props.atualizarInput('valor', texto)}}/>
       <Button title="Gravar" 
-        //onPress={props.gravar()}
+          onPress={props.gravar}
         />
     </View> 
   )
@@ -140,7 +140,7 @@ class Principal extends React.Component {
                 { ()=>{return (
                   <Lancamento lancamentoAtual={this.state.lancamentoAtual}
                       atualizarInput={(campo, txt)=>{this.atualizarLancamento(campo, txt)}} 
-                      // gravar={()=>{this.gravarLista()}}/>
+                      gravar={()=>{this.gravarLista()}}
                       />
                 )}}
               </Tab.Screen>
