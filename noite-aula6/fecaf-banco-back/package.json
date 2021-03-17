@@ -1,0 +1,28 @@
+{
+  "name": "fecaf-banco-back",
+  "version": "1.0.0",
+  "description": "\"# fecaf-banco-back\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antoniorcn/fecaf-banco-back.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antoniorcn/fecaf-banco-back/issues"
+  },
+  "homepage": "https://github.com/antoniorcn/fecaf-banco-back#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  }
+}

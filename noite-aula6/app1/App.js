@@ -4,6 +4,7 @@ import { Button, FlatList, ImageBackground, StyleSheet, Text, TextInput, View } 
 import Coins from './assets/coins.jpg';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import axios from 'axios';
 
 const Tab = createBottomTabNavigator();
 
@@ -94,20 +95,17 @@ class Principal extends React.Component {
       valor: ""
     },
 
-    lancamentos: [
-      { data: '2021-03-10',
-        descricao: 'pagamento',
-        valor: 2500.00
-      },
-      { data: '2021-03-15',
-        descricao: 'gasolina',
-        valor: -100.00
-      },
-      { data: '2021-03-16',
-        descricao: 'mercado',
-        valor: -200.00
-      }
-    ]
+    lancamentos: []
+  }
+
+  componentDidMount() { 
+    axios.get('https://fecaf-pdm2-back.herokuapp.com/extrato')
+      .then((res) => {
+        console.log(res.data);
+        const novoState = {...this.state};
+        novoState.lancamentos = [...res.data];
+        this.setState(novoState);
+      })
   }
 
   atualizarLancamento(campo, texto) { 
