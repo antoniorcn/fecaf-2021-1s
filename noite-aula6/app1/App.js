@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Button, FlatList, ImageBackground, StyleSheet, Text, TextInput, View } from 'react-native';
 import Coins from './assets/coins.jpg';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -41,24 +41,88 @@ const estilos = StyleSheet.create({
   }
 });
 
-const Lancamento = () => { 
+const Lancamento = (props) => { 
+  const options = { weekday: 'long', year: 'long', month: 'long', day: 'numeric' };
+  const d = new Date();
+  const fmtDate = d.toLocaleDateString("en-US", options); 
+  
   return(
     <View>
-      <Text>Lançamento</Text>
-    </View>
+      <Text>Data</Text>
+      <TextInput value={props.lancamentoAtual.data} 
+          onChangeText={(texto)=>{props.atualizarInput('data', texto)}}/>
+      <Text>Descricao</Text>
+      <TextInput value={props.lancamentoAtual.descricao}
+          onChangeText={(texto)=>{props.atualizarInput('descricao', texto)}}/>
+      <Text>Valor</Text>
+      <TextInput value={""+props.lancamentoAtual.valor}
+          onChangeText={(texto)=>{props.atualizarInput('valor', texto)}}/>
+      <Button title="Gravar" 
+        //onPress={props.gravar()}
+        />
+    </View> 
   )
 }
 
+const Linha = (props) => { 
+  console.log(props);
+  return (
+    <View>
+      <Text>{props.item.data}  -  {props.item.descricao} - {props.item.valor}</Text>
+    </View>
+  );
+}
 
-const Extrato = () => { 
+const Extrato = (props) => { 
+  console.log(props.lancamentos);
   return(
     <View>
-      <Text>Extrato</Text>
+      <FlatList
+        data={props.lancamentos}
+        renderItem={Linha}
+        keyExtractor={item => item.index}
+      />
     </View>
   )
 }
 
 class Principal extends React.Component { 
+  state = { 
+    lancamentoAtual : { 
+      data: "03/03/2021",
+      descricao: "",
+      valor: ""
+    },
+
+    lancamentos: [
+      { data: '2021-03-10',
+        descricao: 'pagamento',
+        valor: 2500.00
+      },
+      { data: '2021-03-15',
+        descricao: 'gasolina',
+        valor: -100.00
+      },
+      { data: '2021-03-16',
+        descricao: 'mercado',
+        valor: -200.00
+      }
+    ]
+  }
+
+  atualizarLancamento(campo, texto) { 
+    const novoState = {...this.state};
+    novoState.lancamentoAtual[campo] = texto;
+    this.setState(novoState);
+  }
+
+  gravarLista() { 
+    const novoState = {...this.state};
+    novoState.lancamentos.push(
+      {...novoState.lancamentoAtual}
+    );
+    this.setState(novoState);
+  }
 
   render() { 
     return (
@@ -72,8 +136,19 @@ class Principal extends React.Component {
         <View style={estilos.corpo}>
           <NavigationContainer>
             <Tab.Navigator>
-              <Tab.Screen name="Lançamento" component={Lancamento}/>
-              <Tab.Screen name="Extrato" component={Extrato}/>
+              <Tab.Screen name="Lançamento">
+                { ()=>{return (
+                  <Lancamento lancamentoAtual={this.state.lancamentoAtual}
+                      atualizarInput={(campo, txt)=>{this.atualizarLancamento(campo, txt)}} 
+                      // gravar={()=>{this.gravarLista()}}/>
+                      />
+                )}}
+              </Tab.Screen>
+              <Tab.Screen name="Extrato">
+                { ()=> {return (
+                  <Extrato lancamentos={this.state.lancamentos}/>
+                )}}
+              </Tab.Screen>
             </Tab.Navigator>
           </NavigationContainer>
         </View>
