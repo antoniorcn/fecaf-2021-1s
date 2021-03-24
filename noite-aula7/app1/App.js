@@ -92,7 +92,7 @@ class Principal extends React.Component {
     lancamentoAtual : { 
       data: "03/03/2021",
       descricao: "",
-      valor: ""
+      valor: "0"
     },
 
     lancamentos: []
@@ -119,28 +119,30 @@ class Principal extends React.Component {
 
   gravarLista() { 
 
-    fetch('https://fecaf-back-banco.herokuapp.com/lancamento', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.state.lancamentoAtual)
-    });
-    ToastAndroid.show("Lançamento gravado no servidor", ToastAndroid.LONG);
-
-    // axios.put(
-    //     'https://fecaf-back-banco.herokuapp.com/lancamento', 
-    //     {...this.state.lancamentoAtual},
-    //     {
-    //       headers: {'Content-Type': 'application/json'}
-    //     }
-    // ).then( (res) => { 
-    //   console.log(res);
-    //   ToastAndroid.show("Lançamento gravado no servidor", ToastAndroid.LONG);
-    // }).catch( (err) => { 
-    //   console.log("Erro", err)
-    // })
+    // fetch('https://fecaf-back-banco.herokuapp.com/lancamento', {
+    //   method: 'POST',
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(this.state.lancamentoAtual)
+    // });
+    // ToastAndroid.show("Lançamento gravado no servidor", ToastAndroid.LONG);
+    const lancamentoAtual = {...this.state.lancamentoAtual};
+    lancamentoAtual.valor = parseFloat(lancamentoAtual.valor) + 0.01;
+    console.log("Gravando: ", lancamentoAtual);
+    axios.post(
+        'https://fecaf-back-banco.herokuapp.com/lancamento', 
+        lancamentoAtual,
+        {
+          headers: {'Content-Type': 'application/json'}
+        }
+    ).then( (res) => { 
+      // console.log(res);
+      ToastAndroid.show("Lançamento gravado no servidor", ToastAndroid.LONG);
+    }).catch( (err) => { 
+      console.log("Erro", err)
+    })
 
     // const novoState = {...this.state};
     // novoState.lancamentos.push(
