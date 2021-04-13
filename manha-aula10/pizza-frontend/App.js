@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Image, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Button, Image, StyleSheet, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ImagePizza from './assets/imagem-pizza.jpg';
@@ -83,10 +83,32 @@ class App extends React.Component {
       const novoState = {...this.state};
       novoState.lista = [...response.data];
       this.setState(novoState);
+      ToastAndroid.show("Lista carregada com sucesso", ToastAndroid.LONG);
     })
     .catch( () => {
-      console.log('Deu Erro');
+      ToastAndroid.show("Erro ao carregar a lista", ToastAndroid.LONG);
     })
+  }
+
+  limparPedido() { 
+    const novoState = {...this.state};
+    novoState.novoPedido.cliente = "";
+    novoState.novoPedido.sabor = "";
+    novoState.novoPedido.tamanho = "";
+    novoState.novoPedido.quantidade = "";
+    this.setState(novoState);
+  }
+
+  gravarPedido() { 
+    axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/pedido/adicionar', 
+      this.state.novoPedido)
+    .then( () => {
+      ToastAndroid.show("Pedido gravado com sucesso", ToastAndroid.LONG);
+      this.limparPedido();
+    } )
+    .catch( () => {
+      ToastAndroid.show("Erro ao gravar o pedido", ToastAndroid.LONG);
+    } )
   }
 
   atualizarTextInput(texto, campo) { 
@@ -105,7 +127,7 @@ class App extends React.Component {
               <Tab.Screen name="Novo Pedido">
                 {()=>
                   <NovoPedido gravar={
-                                      () => {console.log("Botão gravar apertado")}
+                                      () => {this.gravarPedido();}
                                     }
                               pedido={this.state.novoPedido}
                               atualizarInput={(txt, campo) => {this.atualizarTextInput(txt, campo)}}
