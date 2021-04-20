@@ -151,9 +151,79 @@ class App extends React.Component {
   }
 }
 
-export default App;
+
+class Login extends React.Component { 
+
+  state = {
+    usuario: "",
+    senha: "",
+    token: undefined,
+  }
+
+  atualizaTexto(txt, campo) { 
+    const novoState = {...this.state};
+    novoState[campo] = txt;
+    this.setState(novoState);
+  }
+
+  login() {
+    // ToastAndroid.show("Usuario=>" + this.state.usuario +
+    //  "  Senha=>" + this.state.senha, ToastAndroid.LONG);
+    const userInfo = {
+          "usuario": this.state.usuario,
+          "senha": this.state.senha,
+    }
+    axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/login', userInfo)
+    .then((res)=>{
+      console.log(res.data);
+      ToastAndroid.show("Logado", ToastAndroid.LONG);
+    })
+    .catch((err)=>{
+      console.log("Erro==>", err);
+      ToastAndroid.show("Erro: " + err, ToastAndroid.LONG);
+    })
+  }
+
+
+  render() { 
+    return (
+      <View style={estilos.loginArea}>
+        <Text>Insira o nome do usuário</Text>
+        <TextInput  style={estilos.loginUsuario} 
+                    value={this.state.usuario}
+                    onChangeText={(texto)=>{this.atualizaTexto(texto, 'usuario')}}/>
+        <Text>Insira sua senha</Text>
+        <TextInput style={estilos.loginSenha}
+                    placeholderTextColor="#9a73ef"
+                    returnKeyType="go"
+                    secureTextEntry
+                    autoCorrect={false}
+                    value={this.state.senha}
+                    onChangeText={(texto)=>{this.atualizaTexto(texto, 'senha')}}/>
+        <Button title="LOG IN" onPress={()=>{this.login()}}/>
+      </View>
+    )
+  }
+}
+
+export default Login;
 
 const estilos = StyleSheet.create({
+  loginArea: { 
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
+  loginUsuario: { 
+    marginBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: "#77F"
+  },
+  loginSenha: { 
+    marginBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: "#777"
+  },
   principal: {
     flex: 1,
     flexDirection: 'column',

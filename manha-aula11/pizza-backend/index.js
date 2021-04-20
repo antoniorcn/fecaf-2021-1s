@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || config.get('jwt.secret');
 
 const pool = new pg.Pool(
     {
-        connectionString: "postgres://wyizbldtoayiph:202512e1f9f7d876f96c5a438bfa909ee915d1059fa765ea4fa899c4c1fdcaaa@ec2-18-204-101-137.compute-1.amazonaws.com:5432/df1ct3v5f2gtrh",
+        connectionString: "postgres://meaxfophlbipcd:a96c92ab8e0e95761cc53d1d778e12a6cd19ca1b65a54452264c68937a2186bd@ec2-107-22-83-3.compute-1.amazonaws.com:5432/df1guhaibu1lmd",
         ssl: { 
             rejectUnauthorized: false
         }
