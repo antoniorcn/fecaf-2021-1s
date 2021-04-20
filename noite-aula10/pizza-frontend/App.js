@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Image, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Button, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View} from 'react-native';
 import ImagemPizza from './assets/imagem-pizza.jpg';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -35,7 +35,7 @@ function Formulario(props) {
                       value={props.pedido.tamanho}
                       onChangeText={(txt)=>{props.mudarTexto(txt, 'tamanho')}}/>
         </View>     
-        <Button title="Gravar"/>      
+        <Button title="Gravar" onPress={props.gravar}/>      
       </View>
   );
 }
@@ -56,18 +56,17 @@ function ListaPedidos(props) {
 
   return (
     <View style={estilos.listaPedidos}>
-      {listaDisplay}
+      <Button title="Atualizar Lista" onPress={props.atualizar}/>
+      <ScrollView>
+        {listaDisplay}
+      </ScrollView>
     </View>
   );
 }
 
 class App extends React.Component {
-
   state = { 
-    lista: [
-      {cliente: "João Silva", sabor: "Mussarela", tamanho: "Médio", quantidade: 1},
-      {cliente: "Maria Silva", sabor: "Calabresa", tamanho: "Médio", quantidade: 1}
-    ],
+    lista: [],
 
     pedidoAtual: { 
       cliente: "", 
@@ -78,7 +77,35 @@ class App extends React.Component {
   }
 
   atualizarLista() { 
+    axios.get('https://fecaf-prof-pizza-backend.herokuapp.com/pedidos')
+    .then(
+        (resposta)=>{
+          const novoState = {...this.state};
+          novoState.lista = [...resposta.data];
+          this.setState(novoState);
+          ToastAndroid.show(
+            `Foi carregada a lista com ${novoState.lista.length} pedidos`, 
+            ToastAndroid.LONG);
+        })
+    .catch(
+        (err)=>{
+          ToastAndroid.show("Erro ao carregar a lista", ToastAndroid.LONG);
+        })
+  }
 
+  gravarPedido() { 
+    axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/pedido/adicionar',
+    this.state.pedidoAtual)
+    .then( (resposta)=> {
+      if (resposta.status === 200) { 
+        ToastAndroid.show("O pedido foi gravado com sucesso", ToastAndroid.LONG);
+      } else { 
+        ToastAndroid.show("Erro ao gravar o pedido", ToastAndroid.LONG);
+      }
+    })
+    .catch( (err) => {
+      ToastAndroid.show("Houve um erro no servidor ao gravar o pedido", ToastAndroid.LONG);
+    })
   }
 
   inputChange(texto, campo) { 
@@ -97,10 +124,12 @@ class App extends React.Component {
               <Tab.Screen name="Novo Pedido">
                 {()=><Formulario pedido={this.state.pedidoAtual}
                           mudarTexto={(txt, campo)=>{this.inputChange(txt, campo)}}
+                          gravar={()=>{this.gravarPedido()}}
                 />}
               </Tab.Screen>
               <Tab.Screen name="Lista Pedidos">
-                {()=><ListaPedidos pedidos={this.state.lista}/>}
+                {()=><ListaPedidos pedidos={this.state.lista}
+                          atualizar={()=>{this.atualizarLista()}}/>}
               </Tab.Screen>
             </Tab.Navigator>
           </NavigationContainer>
