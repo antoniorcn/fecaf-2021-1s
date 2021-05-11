@@ -5,43 +5,37 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import ImagePizza from './assets/imagem-pizza.jpg';
 import axios from 'axios';
-import Contexto, {EstadoGlobal} from './Contexto';
-import MapView from 'react-native-maps';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-class NovoPedido extends React.Component { 
-  static contextType = Contexto;
-  render() {
-    const props = this.props;
-    return (
-      <View style={estilos.viewFormulario}>
-        <Text style={estilos.titulo}>Novo Pedido para {this.context.nome}</Text>
-        <View style={estilos.viewInput}>
-          <Text style={estilos.label}>Cliente</Text>
-          <TextInput style={estilos.input} value={props.pedido.cliente}
-                onChangeText={(txt) => {props.atualizarInput(txt, 'cliente')}}/>
-        </View>
-        <View style={estilos.viewInput}>
-          <Text style={estilos.label}>Sabor</Text>
-          <TextInput style={estilos.input} value={props.pedido.sabor}
-                onChangeText={(txt) => {props.atualizarInput(txt, 'sabor')}}/>
-        </View>
-        <View style={estilos.viewInput}>
-          <Text style={estilos.label}>Tamanho</Text>
-          <TextInput style={estilos.input} value={props.pedido.tamanho}
-                onChangeText={(txt) => {props.atualizarInput(txt, 'tamanho')}}/>
-        </View>
-        <View style={estilos.viewInput}>
-          <Text style={estilos.label}>Quantidade</Text>
-          <TextInput style={estilos.input} value={props.pedido.quantidade}
-                onChangeText={(txt) => {props.atualizarInput(txt, 'quantidade')}}/>
-        </View>
-        <Button title="Gravar" onPress={props.gravar}/>
+function NovoPedido(props) { 
+  return (
+    <View style={estilos.viewFormulario}>
+      <Text style={estilos.titulo}>Novo Pedido</Text>
+      <View style={estilos.viewInput}>
+        <Text style={estilos.label}>Cliente</Text>
+        <TextInput style={estilos.input} value={props.pedido.cliente}
+              onChangeText={(txt) => {props.atualizarInput(txt, 'cliente')}}/>
       </View>
-    );
-  }
+      <View style={estilos.viewInput}>
+        <Text style={estilos.label}>Sabor</Text>
+        <TextInput style={estilos.input} value={props.pedido.sabor}
+              onChangeText={(txt) => {props.atualizarInput(txt, 'sabor')}}/>
+      </View>
+      <View style={estilos.viewInput}>
+        <Text style={estilos.label}>Tamanho</Text>
+        <TextInput style={estilos.input} value={props.pedido.tamanho}
+              onChangeText={(txt) => {props.atualizarInput(txt, 'tamanho')}}/>
+      </View>
+      <View style={estilos.viewInput}>
+        <Text style={estilos.label}>Quantidade</Text>
+        <TextInput style={estilos.input} value={props.pedido.quantidade}
+              onChangeText={(txt) => {props.atualizarInput(txt, 'quantidade')}}/>
+      </View>
+      <Button title="Gravar" onPress={props.gravar}/>
+    </View>
+  );
 }
 
 function ListaPedidos(props) { 
@@ -50,35 +44,31 @@ function ListaPedidos(props) {
   const listaDisplay = lista.map( (elemento)=> {
     return (
       <View style={estilos.listaItem}>
-        <Text style={estilos.listaTitulo}>{elemento.cliente}</Text>
-        <View style={estilos.listaConteudo}>
-          <Text style={estilos.listaConteudoItem}>{elemento.quantidade}</Text>
-          <Text style={estilos.listaConteudoItem}>{elemento.sabor}</Text>
-          <Text style={estilos.listaConteudoItem}>{elemento.tamanho}</Text>
-        </View>
+      <Text style={estilos.listaTitulo}>{elemento.cliente}</Text>
+      <View style={estilos.listaConteudo}>
+        <Text style={estilos.listaConteudoItem}>{elemento.quantidade}</Text>
+        <Text style={estilos.listaConteudoItem}>{elemento.sabor}</Text>
+        <Text style={estilos.listaConteudoItem}>{elemento.tamanho}</Text>
       </View>
+    </View>
     );
   } );
 
   //console.log("Lista Display ==> ", listaDisplay);
 
   return (
-    <Contexto.Consumer>
-      { contexto => 
-          <View style={estilos.lista}>
-            <Text>Pedidos para o {contexto.nome}</Text>
-            {listaDisplay}
-            <Button title="Atualizar" onPress={props.atualizar}/>
-          </View>
-      }
-    </Contexto.Consumer>
+    <View style={estilos.lista}>
+      {listaDisplay}
+      <Button title="Atualizar" onPress={props.atualizar}/>
+    </View>
   );
 }
 
 class Pizza extends React.Component {
-  static contextType = Contexto;
+
   state = {
     lista: [],
+    token: undefined,
     novoPedido: { 
       cliente: "",
       sabor: "",
@@ -89,14 +79,17 @@ class Pizza extends React.Component {
 
   constructor(props) { 
     super(props);
+    const { token } = props.route.params;
+    this.state.token = token;
+    console.log("Token pela Pizza ==> ", this.state);
   }
 
   atualizarLista() {
     const header = { "headers" : {
-                                    "Authorization": "Bearer " + this.context.token
+                                    "Authorization": "Bearer " + this.state.token
                                   }
                   }
-    console.log("Atualizar Lista, Token ==>", this.context.token);
+    console.log("Atualizar Lista, Token ==>", this.state.token);
     axios.get('https://fecaf-prof-pizza-backend.herokuapp.com/pedidos', header)
     .then( (response) => {
       console.log('Funcionou');
@@ -123,10 +116,10 @@ class Pizza extends React.Component {
 
   gravarPedido() { 
     const header = { "headers" : {
-                                  "Authorization": "Bearer " + this.context.token
+                                  "Authorization": "Bearer " + this.state.token
                                  }
     }   
-    console.log("Gravar Pedido, Token ==>", this.context.token);
+    console.log("Gravar Pedido, Token ==>", this.state.token);
     axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/pedido/adicionar', 
       this.state.novoPedido, header)
     .then( () => {
@@ -179,10 +172,11 @@ class Pizza extends React.Component {
 
 
 class Login extends React.Component { 
-  static contextType = Contexto;
+
   state = {
     usuario: "admin",
     senha: "123456",
+    token: undefined,
   }
 
   atualizaTexto(txt, campo) { 
@@ -194,85 +188,60 @@ class Login extends React.Component {
   login() {
     // ToastAndroid.show("Usuario=>" + this.state.usuario +
     //  "  Senha=>" + this.state.senha, ToastAndroid.LONG);
-      const userInfo = {
-            "usuario": this.state.usuario,
-            "senha": this.state.senha,
-      }
-      axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/login', userInfo)
-      .then((res)=>{
-        console.log(res.data.token);
-        const token = res.data.token;
-        
-        console.log("Contexto Antes da Alteração--> ", this.context);
-        this.context.setToken(token);
-        this.context.setNome(this.state.usuario);
-        console.log("Depois da Alteração --> ", this.context);
-
-        ToastAndroid.show("Logado", ToastAndroid.LONG);
-        this.props.navigation.navigate("Pizza");
-      })
-      .catch((err)=>{
-        console.log("Erro==>", err);
-        ToastAndroid.show("Erro: " + err, ToastAndroid.LONG);
-      })
+    const userInfo = {
+          "usuario": this.state.usuario,
+          "senha": this.state.senha,
+    }
+    axios.post('https://fecaf-prof-pizza-backend.herokuapp.com/login', userInfo)
+    .then((res)=>{
+      console.log(res.data.token);
+      const token = res.data.token;
+      ToastAndroid.show("Logado", ToastAndroid.LONG);
+      this.props.navigation.navigate("Pizza", {token});
+    })
+    .catch((err)=>{
+      console.log("Erro==>", err);
+      ToastAndroid.show("Erro: " + err, ToastAndroid.LONG);
+    })
   }
 
 
   render() { 
     return (
-        <View style={estilos.loginArea}>
-          <Text>Insira o nome do usuário</Text>
-          <TextInput  style={estilos.loginUsuario} 
-                      value={this.state.usuario}
-                      onChangeText={(texto)=>{this.atualizaTexto(texto, 'usuario')}}/>
-          <Text>Insira sua senha</Text>
-          <TextInput style={estilos.loginSenha}
-                      placeholderTextColor="#9a73ef"
-                      returnKeyType="go"
-                      secureTextEntry
-                      autoCorrect={false}
-                      value={this.state.senha}
-                      onChangeText={(texto)=>{this.atualizaTexto(texto, 'senha')}}/>
-          <Button title="LOG IN" onPress={()=>{this.login()}}/>
-          <Button title="Update Token" onPress={()=>{
-            this.context.setToken("123456"); 
-            console.log("Contexto==>", this.context)}}/>   
-        </View> 
+      <View style={estilos.loginArea}>
+        <Text>Insira o nome do usuário</Text>
+        <TextInput  style={estilos.loginUsuario} 
+                    value={this.state.usuario}
+                    onChangeText={(texto)=>{this.atualizaTexto(texto, 'usuario')}}/>
+        <Text>Insira sua senha</Text>
+        <TextInput style={estilos.loginSenha}
+                    placeholderTextColor="#9a73ef"
+                    returnKeyType="go"
+                    secureTextEntry
+                    autoCorrect={false}
+                    value={this.state.senha}
+                    onChangeText={(texto)=>{this.atualizaTexto(texto, 'senha')}}/>
+        <Button title="LOG IN" onPress={()=>{this.login()}}/>   
+      </View>
     )
   }
 }
 
 class App extends React.Component { 
-  static contextType = Contexto;
+
   render() { 
     return (
       <View style={{flex: 1}}>
-        <EstadoGlobal>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen name="Login" component={Login}/>
-              <Stack.Screen name="Pizza" component={Pizza}/>
-              <Stack.Screen name="Mapa" component={Mapa}/>
-            </Stack.Navigator>
-          </NavigationContainer>
-        </EstadoGlobal>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen name="Login" component={Login}/>
+            <Stack.Screen name="Pizza" component={Pizza}/>
+          </Stack.Navigator>
+        </NavigationContainer>
       </View>
     );
   }
 
-}
-
-function Mapa(props) { 
-  return( 
-    <MapView style={{width: 300, height: 300}}
-    initialRegion={{
-      latitude: -23.610637553005315,	//posição inicial do mapa
-      longitude: -46.76885262120093,	//posição inicial do mapa
-      latitudeDelta: 0.195,  	//determina o zoom do mapa
-      longitudeDelta: 0.1921,	//determina o zoom do mapa
-    }} 
-    />
-  )
 }
 
 export default App;

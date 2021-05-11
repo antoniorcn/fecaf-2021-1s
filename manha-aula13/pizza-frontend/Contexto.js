@@ -1,30 +1,51 @@
 import React from 'react';
-export const MeuContexto = React.createContext(
-    { 
-        token: "",
+
+export default Contexto = React.createContext(
+    {
         nome: "",
-        atualizarState : () => {}
+        token: "",
+        setToken: () => {},
+        setNome: () => {}
     }
 );
 
-export class ContextoPrincipal extends React.Component { 
-    atualizarState = (field, value) => { 
-        const novoState = {...this.state};
-        novoState[field] = value;
-        this.setState(novoState);
-    }
-
+export class EstadoGlobal extends React.Component { 
     state = { 
         token: "",
         nome: "",
-        atualizarState : this.atualizarState
     }
+
+    // setEstado = (field, value) => { 
+    //     const novoState = {...this.state};
+    //     novoState[field] = value;
+    //     this.setState(novoState);
+    // }
+
+    setToken = (token) => { 
+        const novoState = {...this.state};
+        novoState.token = token;
+        this.setState(novoState);
+    }
+
+    setNome = (nome) => { 
+        const novoState = {...this.state};
+        novoState.nome = nome;
+        this.setState(novoState);
+    }
+
 
     render() {
         return (
-            <MeuContexto.Provider value={this.state}>
+            <Contexto.Provider value={
+                { 
+                    token: this.state.token,
+                    nome: this.state.nome,
+                    setToken : this.setToken,
+                    setNome : this.setNome
+                }
+            }>
                 {this.props.children}
-            </MeuContexto.Provider>
+            </Contexto.Provider>
         );
     }
 }
